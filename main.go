@@ -16,7 +16,7 @@ var client = awtrix.NewClient(awtrixAPI)
 
 func help() {
 	fmt.Println()
-	fmt.Printf("  node-awtrix %s\n", version)
+	fmt.Printf("  awtrix %s\n", version)
 	fmt.Println()
 	fmt.Println("  Usage: awtrix <command>")
 	fmt.Println()
@@ -36,14 +36,13 @@ func help() {
 	fmt.Println("  awtrix brightness 50")
 	fmt.Println("  awtrix notify \"Hello World\"")
 	fmt.Println()
-	fmt.Println("  https://github.com/song940/node-awtrix")
+	fmt.Println("  https://github.com/song940/awtrix-go")
 	fmt.Println()
 }
 
 func main() {
 	flag.Parse()
 	args := flag.Args()
-
 	if len(args) < 1 {
 		help()
 		return
@@ -55,8 +54,7 @@ func main() {
 	case "set":
 		key := args[1]
 		value := args[2]
-		res, _ := client.Set(map[string]interface{}{key: value})
-		fmt.Println(res)
+		client.Set(map[string]interface{}{key: value})
 	case "get":
 		key := args[1]
 		value, _ := client.Get(key)
@@ -64,21 +62,31 @@ func main() {
 	case "get_version":
 		v, _ := client.GetVersion()
 		fmt.Println(v)
+	case "get_settings":
+		value, _ := client.GetSettings()
+		fmt.Println(value)
+	case "list_apps":
+		apps, _ := client.ListApps()
+		fmt.Println(apps)
 	case "uptime":
 		uptime, _ := client.GetUptime()
 		fmt.Println(uptime)
 	case "power":
 		state := args[1]
-		res, _ := client.Power(state == "on")
-		fmt.Println(res)
-	case "brightness":
+		client.Power(state == "on")
+	case "set_brightness":
 		brightnessValue, err := strconv.Atoi(args[1])
 		if err != nil {
 			fmt.Println("Brightness value should be a valid integer.")
 			return
 		}
-		res, err := client.Brightness(brightnessValue)
-		fmt.Println(res)
+		client.SetBrightness(brightnessValue)
+	case "get_brightness":
+		brightness, err := client.GetBrightness()
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(brightness)
 	case "notify":
 		message := args[1]
 		res, _ := client.Notify(message)
